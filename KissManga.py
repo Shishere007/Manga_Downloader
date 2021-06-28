@@ -104,6 +104,7 @@ class KissManga:
             image_list.append((filename, url))
         tools.download_chapter(current_chapter=chapter, image_list=image_list)
         chapter_folder = chapter_folder[:-1]
+        tools.to_zip(self.manga_name)
 
     def download_multiple_chapters(self, chapter_list: list, thread_count: int = 1) -> None:
         '''
@@ -125,7 +126,7 @@ class KissManga:
         with concurrent.futures.ThreadPoolExecutor(max_workers=POOL_SIZE) as executor:
             executor.map(self.download_chapter, chapter_list)
         
-        print(f"DOWNLOAD FINISHED : {len(chapter_list)} chapters downloaded")
+        # print(f"DOWNLOAD FINISHED : {len(chapter_list)} chapters downloaded")
 
     def download_all_chapters(self,) -> None:
         if len(self.chapter_list) == 0:

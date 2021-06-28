@@ -1,13 +1,13 @@
-
+import os
 import requests
 from bs4 import BeautifulSoup
-from os import mkdir, system
+from os import mkdir
 import concurrent.futures
-import multiprocessing
 import re
 import urllib.request
 from tqdm import tqdm
-
+from pathlib import Path
+import shutil
 
 __version__ = '1.0'
 
@@ -16,30 +16,6 @@ def prepare_soup(link: str) -> BeautifulSoup:
     if html.status_code == 200:
         return BeautifulSoup(html.text, 'html.parser')
     return False
-
-
-# def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
-#     """
-#     Call in a loop to create terminal progress bar
-#     @params:
-#         iteration   - Required  : current iteration (Int)
-#         total       - Required  : total iterations (Int)
-#         prefix      - Optional  : prefix string (Str)
-#         suffix      - Optional  : suffix string (Str)
-#         decimals    - Optional  : positive number of decimals in percent complete (Int)
-#         length      - Optional  : character length of bar (Int)
-#         fill        - Optional  : bar fill character (Str)
-#         printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
-#     """
-#     percent = ("{0:." + str(decimals) + "f}").format(100 *
-#                                                      (iteration / float(total)))
-#     filledLength = int(length * iteration // total)
-#     bar = fill * filledLength + '-' * (length - filledLength)
-#     print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
-#     # Print New Line on Complete
-#     if iteration == total:
-#         print()
-
 
 def create_folder(foldername):
     try:
@@ -76,14 +52,16 @@ def download_chapter(current_chapter: str, image_list: list) -> None:
             link = image[1]
             flag = True
             if link.startswith("http") or link.startswith('https'):
-                urllib.request.urlretrieve(link, filename)
+                open(filename, 'wb').write(requests.get(link,stream=True).content)
             else:
                 link = 'http:' + link
-                urllib.request.urlretrieve(link, filename)
+                open(filename, 'wb').write(requests.get(link,stream=True).content)
+                # urllib.request.urlretrieve(link, filename)
         except Exception as e:
             if e.code == 403:
                 try:
-                    open(filename, 'wb').write(requests.get(link,stream=True).content)
+                    urllib.request.urlretrieve(link, filename) 
+                    # open(filename, 'wb').write(requests.get(link,stream=True).content)
                 except Exception as e:
                     # print(e)
                     flag = False
@@ -122,6 +100,13 @@ def clear_name(chapter_name):
 def format_manga_name(manga_name: str) -> str:
     return manga_name.replace(" ", "_")
 
+def to_zip(folder:str) -> None:
+    for fold in Path(folder).glob('*'):
+        if fold.is_dir():
+            # zip_filename = str(fold) + ".zip"
+            shutil.make_archive(str(fold),'zip',str(fold))
+            shutil.rmtree(str(fold))
 
 if __name__ == "__main__":
-    pass
+    # pass
+    to_zip('Nan Hao & Shang Feng')
