@@ -1,15 +1,17 @@
 from tkinter import Button, Entry, IntVar, Label, StringVar, Tk, ttk
 from tkinter.constants import END
 from tkinter.messagebox import showinfo
-from KissManga import KissManga
 from threading import Thread
+
+from manganelo import Manganelo
+from KissManga import KissManga
 
 __author__ = "Shishere"
 __version__ = "1.1"
 
 class downloader:
     def __init__(self) -> None:
-        self.__manga_site_list = ['KissManga']
+        self.__manga_site_list = ['KissManga','Manganelo']
         
         self.__root = Tk()
         self.__root.title("Manga Downloader")
@@ -116,8 +118,8 @@ class downloader:
     def __site_allowed(self,) -> bool:
         for site in self.__manga_site_list:
             if self.__manga_link.lower().__contains__(site.lower()):
-                return True
-            return False
+                return site
+        return False
 
     def __search(self) -> None:
         try:
@@ -127,12 +129,16 @@ class downloader:
             if not self.__manga_link:
                 self.__popup('manga')
                 return
-            
-            if not self.__site_allowed():
+            manga_site = self.__site_allowed()
+            if not manga_site:
                 self.__popup('invlid site')
                 return
-
-            self.manga = KissManga(manga_link=self.__manga_link,zip=self.zip.get())
+            
+            if manga_site == 'KissManga':
+                self.manga = KissManga(manga_link=self.__manga_link,zip=self.zip.get())
+            elif manga_site == 'Manganelo':
+                self.manga = Manganelo(manga_link=self.__manga_link,zip=self.zip.get())
+            
             self.manga.get_chapter_list()
             self.__mange_name_textbox.insert(0, self.manga.manga_name)
 
@@ -236,6 +242,7 @@ class downloader:
     
     def __update_zip(self,) -> None:
         self.manga.zip = self.zip.get()
+    
 
 
 

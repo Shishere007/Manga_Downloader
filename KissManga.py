@@ -1,13 +1,13 @@
 import tools
-import concurrent.futures
-import multiprocessing
+from manga_site_base import MangaSite
 
 __author__ = "Shishere"
-__version__ = "1.1"
+__version__ = "1.2"
 
 
-class KissManga:
+class KissManga(MangaSite):
     def __init__(self, manga_link: str, manga_name: str = None,zip:bool=True) -> None:
+        super().__init__(manga_link, manga_name=manga_name, zip=zip)
         self.__base_url = 'https://kissmanga.org'
         # self.__search = f"https://kissmanga.org/manga_list?q={self.manga_name.replace(' ','+')}&action=search"
 
@@ -107,35 +107,6 @@ class KissManga:
         chapter_folder = chapter_folder[:-1]
         if self.zip:
             tools.to_zip(self.manga_name)
-
-    def download_multiple_chapters(self, chapter_list: list, thread_count: int = 1) -> None:
-        '''
-        @param
-        chapter_list    (list)  : [{"chapter":"chapter","link":"link"}]
-        thread_count    (int)   :   integer value : default = 1
-        '''
-        if len(self.chapter_list) == 0:
-            print("NO CHAPTER FOUND")
-            return
-        available_thread_count = multiprocessing.cpu_count() * 2
-
-        if thread_count < 1:
-            thread_count = 1
-        elif thread_count > available_thread_count:
-            thread_count = available_thread_count
-
-        POOL_SIZE = thread_count  # multiprocessing.cpu_count()
-        with concurrent.futures.ThreadPoolExecutor(max_workers=POOL_SIZE) as executor:
-            executor.map(self.download_chapter, chapter_list)
-        
-        # print(f"DOWNLOAD FINISHED : {len(chapter_list)} chapters downloaded")
-
-    def download_all_chapters(self,) -> None:
-        if len(self.chapter_list) == 0:
-            print("NO CHAPTER FOUND")
-            return
-        self.download_multiple_chapters(chapter_list=self.chapter_list)
-
 
 if __name__ == "__main__":
     pass

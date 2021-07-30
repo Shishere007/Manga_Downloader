@@ -9,7 +9,7 @@ from tqdm import tqdm
 from pathlib import Path
 import shutil
 
-__version__ = '1.0'
+__version__ = '1.1'
 
 def prepare_soup(link: str) -> BeautifulSoup:
     html = requests.get(link)
@@ -36,7 +36,7 @@ def format_manga_name(manga: str):
     return manga.capitalize()
 
 
-def download_chapter(current_chapter: str, image_list: list) -> None:
+def download_chapter(current_chapter: str, image_list: list,header=False) -> None:
     '''
     @param
     current_chapter (str)   :   Chpater 1
@@ -51,11 +51,12 @@ def download_chapter(current_chapter: str, image_list: list) -> None:
             filename = image[0]
             link = image[1]
             flag = True
-            if link.startswith("http") or link.startswith('https'):
-                open(filename, 'wb').write(requests.get(link,stream=True).content)
-            else:
+            if not (link.startswith("http") or link.startswith('https')):
                 link = 'http:' + link
-                open(filename, 'wb').write(requests.get(link,stream=True).content)
+            if header:
+                open(filename, 'wb').write(requests.get(link,stream=True,headers=header).content)
+            else:
+                open(filename, 'wb').write(requests.get(link,stream=True,).content)
                 # urllib.request.urlretrieve(link, filename)
         except Exception as e:
             if e.code == 403:

@@ -10,3 +10,4 @@ Copy manga link from the website and use the link to download the manga
 
 ### Supported Sites : 
 * KissManga (https://kissmanga.org/)
+* Manganelo (https://chap.manganelo.com/)
