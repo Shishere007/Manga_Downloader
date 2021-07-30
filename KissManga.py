@@ -3,16 +3,17 @@ import concurrent.futures
 import multiprocessing
 
 __author__ = "Shishere"
-__version__ = "1.0"
+__version__ = "1.1"
 
 
 class KissManga:
-    def __init__(self, manga_link: str, manga_name: str = None) -> None:
+    def __init__(self, manga_link: str, manga_name: str = None,zip:bool=True) -> None:
         self.__base_url = 'https://kissmanga.org'
         # self.__search = f"https://kissmanga.org/manga_list?q={self.manga_name.replace(' ','+')}&action=search"
 
         self.manga_name = manga_name
         self.manga_link = manga_link
+        self.zip = zip
 
         self.__chapter_list_main_div_className = 'listing listing8515 full'
         self.__pages_div_id = 'centerDivVideo'
@@ -104,7 +105,8 @@ class KissManga:
             image_list.append((filename, url))
         tools.download_chapter(current_chapter=chapter, image_list=image_list)
         chapter_folder = chapter_folder[:-1]
-        tools.to_zip(self.manga_name)
+        if self.zip:
+            tools.to_zip(self.manga_name)
 
     def download_multiple_chapters(self, chapter_list: list, thread_count: int = 1) -> None:
         '''

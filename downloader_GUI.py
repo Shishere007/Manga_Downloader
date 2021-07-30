@@ -1,11 +1,11 @@
-from tkinter import Button, Entry, Label, StringVar, Tk, ttk
+from tkinter import Button, Entry, IntVar, Label, StringVar, Tk, ttk
 from tkinter.constants import END
 from tkinter.messagebox import showinfo
 from KissManga import KissManga
 from threading import Thread
 
 __author__ = "Shishere"
-__version__ = "1.0"
+__version__ = "1.1"
 
 class downloader:
     def __init__(self) -> None:
@@ -49,6 +49,22 @@ class downloader:
         self.__manga_chapter_search_result_table_scrollbar = ttk.Scrollbar(self.__root, orient="vertical", command=self.__manga_chapter_search_result_table.yview)
         self.__manga_chapter_search_result_table.configure(yscroll=self.__manga_chapter_search_result_table_scrollbar.set)
         self.__manga_chapter_search_result_table_scrollbar.pack(side="right", fill='y')
+
+        self.__save_type_label = Label(self.__root, text="Save Chapter as", font=15)
+        self.__save_type_label.place(x=600,y=175)
+        self.zip = IntVar()
+        values = {"Zip":1,"Folder":0}
+        x = 650
+        y = 200
+        for text,val in values.items():
+            ttk.Radiobutton(
+                master=self.__root,
+                text=text,
+                variable=self.zip,
+                value=val,
+            ).place(x=x,y=y)
+            x += 70
+        self.zip.set(1)
 
         self.__from_chapter_label = Label(self.__root, text="From", font=15)
         self.__from_chapter_label.place(x=600, y=300)
@@ -116,7 +132,7 @@ class downloader:
                 self.__popup('invlid site')
                 return
 
-            self.manga = KissManga(manga_link=self.__manga_link)
+            self.manga = KissManga(manga_link=self.__manga_link,zip=self.zip.get())
             self.manga.get_chapter_list()
             self.__mange_name_textbox.insert(0, self.manga.manga_name)
 
@@ -136,6 +152,8 @@ class downloader:
             
     def __download(self,) -> None:
         try:
+            self.__update_zip()
+            
             self.__download_button.config(state='disabled')
             self.__custom_download_button.config(state='disabled')
 
@@ -160,6 +178,7 @@ class downloader:
             from_chapter = int(from_chapter)
             to_chapter = int(to_chapter)
 
+
             from_chapter = 1 if from_chapter < 1 else from_chapter
             to_chapter = self.manga.chapter_count if to_chapter > self.manga.chapter_count else to_chapter
 
@@ -175,6 +194,8 @@ class downloader:
     
     def __download_custom(self,) -> None:
         try:
+            self.__update_zip()
+
             self.__custom_download_button.config(state='disabled')
             self.__download_button.config(state='disabled')
 
@@ -212,6 +233,9 @@ class downloader:
             self.__custom_textbox.insert(0,",".join(already_selected))
         except Exception as e:
             print(e)
+    
+    def __update_zip(self,) -> None:
+        self.manga.zip = self.zip.get()
 
 
 

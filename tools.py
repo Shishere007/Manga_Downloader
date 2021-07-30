@@ -108,5 +108,4 @@ def to_zip(folder:str) -> None:
             shutil.rmtree(str(fold))
 
 if __name__ == "__main__":
-    # pass
-    to_zip('Nan Hao & Shang Feng')
+   pass

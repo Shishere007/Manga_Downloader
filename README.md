@@ -9,4 +9,4 @@ run the install_lib.py file first to install the required libraries.
 Copy manga link from the website and use the link to download the manga
 
 ### Supported Sites : 
-* KissManga
+* KissManga (https://kissmanga.org/)
